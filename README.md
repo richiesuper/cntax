@@ -24,3 +24,7 @@ You can build `cntax` by running `make` on the project directory.
 $ cd /path/to/cntax/directory
 $ make
 ```
+
+## Source Code Viewing
+
+Use tabstop of size 4 in your editor to make the code readable and pretty.
