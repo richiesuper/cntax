@@ -8,4 +8,4 @@ int main(
 	int num[10;
 	printf("gay;
 	return 0;
-	putchar('a;
+	putchar('a);
