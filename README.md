@@ -21,7 +21,9 @@ $ cntax test.c
 You can build `cntax` by running `make` on the project directory.
 
 ```
-$ cd /path/to/cntax/directory
+$ cd /path/to/intended/cntax/directory
+$ git clone https://github.com/richiesuper/cntax
+$ cd cntax
 $ make
 ```
 
