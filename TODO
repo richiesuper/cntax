@@ -1,0 +1,18 @@
+TODO:
+1. Revise the behaviors of:
+	a) Parentheses matching
+	b) Square brackets matching
+	c) Curly braces matching
+   - These three's behaviors are not correct.
+   - They are not block-aware [idk the word]
+     (they don't know if they are inside another set of parentheses / brackets
+	  / braces)
+   - Example:
+   -- int main()
+   -- {
+   --     printf("%d\n", 4*(2 + 3*(6 / 3)));
+   -- }
+   - The parentheses inside `printf`'s second argument is `nested` inside one
+     another. They need to be aware to what they are matched to, not just
+	 from index-counting.
+
