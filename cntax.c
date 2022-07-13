@@ -144,12 +144,14 @@ main(int argc, char *argv[])
 					idx[4][cnt[4][0]][0][0] = line;
 					idx[4][cnt[4][0]][0][1] = col;
 					++cnt[4][0];
+					hasFoundDQuote = 1;
 				}
 				else /* ending double quote */
 				{
 					idx[4][cnt[4][1]][1][0] = line;
 					idx[4][cnt[4][1]][1][1] = col;
 					++cnt[4][1];
+					hasFoundDQuote = 0;
 				}
 				break;
 			/**
