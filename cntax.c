@@ -21,7 +21,7 @@
 
 /* sizes for array */
 #define TYPES 8
-#define COUNT 64
+#define COUNT 64 /* you can edit this value, especially if FILE is big */
 #define ORDER 2
 #define POS   2
 
