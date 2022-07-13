@@ -47,7 +47,7 @@ main(int argc, char *argv[])
 	};
 	int cnt[TYPES][ORDER]; /* counter for the start/end indices of each type */
 	int line, col; /* counter for line number and column number */
-	_Bool hasFoundSQuote, hasFoundDQuote; /* inside a quoted part? */
+	int hasFoundSQuote, hasFoundDQuote; /* inside a quoted part? */
 	int i, j; /* iterators for loops */
 	char *output0 = "%s:%d:%d: %serror:%s Unmatched parentheses.\n",
          *output1 = "%s:%d:%d: %serror:%s Unmatched square brackets.\n",
