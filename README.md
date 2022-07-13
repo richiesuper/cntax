@@ -10,6 +10,12 @@ The project is still WIP.
 $ cntax <FILE>
 ```
 
+Example:
+
+```
+$ cntax test.c
+```
+
 ## Building
 
 You can build `cntax` by running `make` on the project directory.
