@@ -8,11 +8,34 @@ TODO:
      (they don't know if they are inside another set of parentheses / brackets
 	  / braces)
    - Example:
-   -- int main()
-   -- {
-   --     printf("%d\n", 4*(2 + 3*(6 / 3)));
-   -- }
-   - The parentheses inside `printf`'s second argument is `nested` inside one
-     another. They need to be aware to what they are matched to, not just
+    1 int main()
+    2 {
+    3     int i;
+    4     int a[5] = {1,2,3,4,5};
+    5     int b[5] = {0,0,0,0,0};
+    6
+    7     for (i = 0; i < 5; ++i)
+    8         b[a[i - 1]] = a[i];
+    9
+   10     if (1 == 1)
+   11     {
+   12         printf("One\n");
+   13     }
+   14
+   15     printf("%d\n", 4*(2 + 3*(6 / 3)));
+   16 }
+   - The parentheses on the `int main()` line is not nested, so it can use
+     the index-counting method.
+   - The parentheses inside second `printf`'s second argument is `nested` inside
+     one another. They need to be aware to what they are matched to, not just
 	 from index-counting.
+   - The square brackets on the 8th line is nested inside one another, so it
+     can't use the index-counting method
+   - The curly braces of `main` function has another set of curly braces from
+     the `if` statement on line 10 (start line 11, end line 13). These can't use
+	 the index-counting method.
+   - So, I need some mechanism to get these (),[],{} to be aware of nesting.
 
+2. Implement the escape sequence section
+
+3. Implement the semi-colon section
