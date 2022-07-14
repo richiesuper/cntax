@@ -6,7 +6,7 @@ TODO:
    - These three's behaviors are not correct.
    - They are not block-aware [idk the word]
      (they don't know if they are inside another set of parentheses / brackets
-	  / braces)
+      / braces)
    - Example:
     1 int main()
     2 {
@@ -28,12 +28,12 @@ TODO:
      the index-counting method.
    - The parentheses inside second `printf`'s second argument is `nested` inside
      one another. They need to be aware to what they are matched to, not just
-	 from index-counting.
+     from index-counting.
    - The square brackets on the 8th line is nested inside one another, so it
      can't use the index-counting method
    - The curly braces of `main` function has another set of curly braces from
      the `if` statement on line 10 (start line 11, end line 13). These can't use
-	 the index-counting method.
+     the index-counting method.
    - So, I need some mechanism to get these (),[],{} to be aware of nesting.
 
 2. Implement the escape sequence section
