@@ -16,12 +16,14 @@
  * <http://www.gnu.org/licenses/>.
  */
 
+/* use tab size of 4 to view the code as it's intended! */
+
 #include <stdio.h>
 #include <string.h>
 
 /* sizes for array */
 #define TYPES 8
-#define COUNT 64 /* you can edit this value, especially if FILE is big */
+#define COUNT 2048 /* you can edit this value, especially if FILE is big */
 #define ORDER 2
 #define POS   2
 
@@ -48,6 +50,7 @@ main(int argc, char *argv[])
 	int cnt[TYPES][ORDER]; /* counter for the start/end indices of each type */
 	int line, col; /* counter for line number and column number */
 	int hasFoundSQuote, hasFoundDQuote; /* inside a quoted part? */
+	int inCmnt; /* inside a comment? */
 	int i, j; /* iterators for loops */
 	char *output0 = "%s:%d:%d: %serror:%s Unmatched parentheses.\n",
          *output1 = "%s:%d:%d: %serror:%s Unmatched square brackets.\n",
@@ -75,7 +78,7 @@ main(int argc, char *argv[])
 	/* initialize line and col to starting value, set the state of quotes */
 	line = 1;
 	col = 0;
-	hasFoundSQuote = hasFoundDQuote = 0;
+	hasFoundSQuote = hasFoundDQuote = inCmnt = 0;
 
 	/* initialize the last character as NULL, because we haven't read any */
 	lastC = '\0';
@@ -86,8 +89,6 @@ main(int argc, char *argv[])
 
 		switch (c)
 		{
-			default:
-				break;
 			case '\n': /* newline */
 				++line;
 				col = 0;
@@ -123,6 +124,9 @@ main(int argc, char *argv[])
 				++cnt[2][1];
 				break;
 			case '\'': /* single quote (can be starting or ending) */
+				if (lastC == '\\')
+					break;
+
 				if (hasFoundSQuote == 0) /* starting single quote */
 				{
 					idx[3][cnt[3][0]][0][0] = line;
@@ -139,6 +143,9 @@ main(int argc, char *argv[])
 				}
 				break;
 			case '"': /* double quote (can be starting or ending) */
+				if (lastC == '\\')
+					break;
+
 				if (hasFoundDQuote == 0) /* starting double quote */
 				{
 					idx[4][cnt[4][0]][0][0] = line;
@@ -154,35 +161,30 @@ main(int argc, char *argv[])
 					hasFoundDQuote = 0;
 				}
 				break;
-			/**
-			 * TODO: understand this escape sequencing behavior (backslash)
-			 *       and devise a good approach
-			 */
-			case '\\': /* backslash / escape sequence */
-				idx[5][cnt[5][0]][0][0] = line;
-				idx[5][cnt[5][0]][0][1] = col;
-				++cnt[5][0];
-				break;
 			case '*': /* asterisk of the comment beginning */
-				if (lastC == '/')
+				if (lastC == '/' && inCmnt == 0)
 				{
 					idx[6][cnt[6][0]][0][0] = line;
 					idx[6][cnt[6][0]][0][1] = col;
 					++cnt[6][0];
+					inCmnt = 1;
 				}
 				break;
 			case '/': /* forward slash of the comment ending */
-				if (lastC == '*')
+				if (lastC == '*' && inCmnt == 1)
 				{
 					idx[6][cnt[6][1]][1][0] = line;
 					idx[6][cnt[6][1]][1][1] = col;
 					++cnt[6][1];
+					inCmnt = 0;
 				}
 				break;
 			case ';': /* semi colon (start position only) */
 				idx[7][cnt[7][0]][0][0] = line;
 				idx[7][cnt[7][0]][0][1] = col;
 				++cnt[7][0];
+				break;
+			default:
 				break;
 		}
 
