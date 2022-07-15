@@ -3,10 +3,11 @@ TODO:
 	a) Parentheses matching
 	b) Square brackets matching
 	c) Curly braces matching
-   - These three's behaviors are not correct.
+	d) Comment matching
+   - These four's behaviors are not correct.
    - They are not block-aware [idk the word]
      (they don't know if they are inside another set of parentheses / brackets
-      / braces)
+      / braces / comments)
    - Example:
     1 int main()
     2 {
@@ -24,6 +25,8 @@ TODO:
    14
    15     printf("%d\n", 4*(2 + 3*(6 / 3)));
    16 }
+   17 /* /* /* /* This is the end of the program, and also it's a comment */
+   18
    - The parentheses on the `int main()` line is not nested, so it can use
      the index-counting method.
    - The parentheses inside second `printf`'s second argument is `nested` inside
@@ -34,7 +37,9 @@ TODO:
    - The curly braces of `main` function has another set of curly braces from
      the `if` statement on line 10 (start line 11, end line 13). These can't use
      the index-counting method.
-   - So, I need some mechanism to get these (),[],{} to be aware of nesting.
+   - The comment on line 17 is a VALID comment, but right now, cntax incorrectly
+     flags it as syntax error (not block-aware / nesting-aware).
+   - So, I need some mechanism to get these (),[],{},/*...*/ to be aware of nesting.
 
 2. Implement the escape sequence section
 
