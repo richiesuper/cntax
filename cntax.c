@@ -31,49 +31,19 @@
 #define RED "\033[1;31m"
 #define CLR "\033[0m"
 
-int
-main(int argc, char *argv[])
+/* limit for filename length */
+#define MAXFNLEN 1024
+
+void detect_errors(FILE *fp, int idx[][COUNT][ORDER][POS], int cnt[][ORDER]);
+void print_errors(int idx[][COUNT][ORDER][POS], char *outputs[], char *fn);
+
+void
+detect_errors(FILE *fp, int idx[][COUNT][ORDER][POS], int cnt[][ORDER])
 {
-	FILE *fp; /* pointer to FILE */
 	char c, lastC; /* c = current char, lastC = last char */
-	int idx[TYPES][COUNT][ORDER][POS] = {
-		/* [type][count][start, end][line, col] */
-		{ { { 0, 0 } } }, /* parentheses indices */
-		{ { { 0, 0 } } }, /* brackets indices */
-		{ { { 0, 0 } } }, /* braces indices */
-		{ { { 0, 0 } } }, /* single quote indices */
-		{ { { 0, 0 } } }, /* double quote indices */
-		{ { { 0, 0 } } }, /* escape sequence indices */
-		{ { { 0, 0 } } }, /* comment indices */
-		{ { { 0, 0 } } }, /* semi-colon indices (this doesn't have end value) */
-	};
-	int cnt[TYPES][ORDER]; /* counter for the start/end indices of each type */
 	int line, col; /* counter for line number and column number */
 	int hasFoundSQuote, hasFoundDQuote; /* inside a quoted part? */
 	int inCmnt; /* inside a comment? */
-	int i, j; /* iterators for loops */
-	char *output0 = "%s:%d:%d: %serror:%s Unmatched parentheses.\n",
-         *output1 = "%s:%d:%d: %serror:%s Unmatched square brackets.\n",
-         *output2 = "%s:%d:%d: %serror:%s Unmatched curly braces.\n",
-         *output3 = "%s:%d:%d: %serror:%s Unmatched single quotes.\n",
-         *output4 = "%s:%d:%d: %serror:%s Unmatched double quotes.\n",
-         *output6 = "%s:%d:%d: %serror:%s Unmatched comments.\n";
-
-	if (argc != 2)
-	{
-		fprintf(stderr, "Usage: %s FILE\n", argv[0]);
-		return 1;
-	}
-
-	if ((fp = fopen(argv[1], "r")) == NULL)
-	{
-		fprintf(stderr, "Failure in opening %s\n", argv[1]);
-		return 2;
-	}
-
-	/* fill the memory regions of arrays idx and cnt with zeroes */
-	memset(idx, 0, sizeof idx);
-	memset(cnt, 0, sizeof cnt);
 
 	/* initialize line and col to starting value, set the state of quotes */
 	line = 1;
@@ -190,8 +160,15 @@ main(int argc, char *argv[])
 
 		lastC = c;
 	}
+}
+
+void
+print_errors(int idx[][COUNT][ORDER][POS], char *outputs[], char *fn)
+{
+	int i, j; /* iterators for loops */
 
 	for (i = 0; i < TYPES; ++i)
+	{
 		for (j = 0; j < COUNT; ++j)
 		{
 			/**
@@ -199,44 +176,103 @@ main(int argc, char *argv[])
 			 * single quotes, and double quotes
 			 */
 			if ((i >= 0 && i <= 4) || i == 6)
+			{
 				/* if the starting character is found... */
 				if (idx[i][j][0][0] != 0)
+				{
 					/* ...but the matching ending character is not */
 					if (idx[i][j][1][0] == 0)
+					{
 						switch (i)
 						{
 							case 0:
-								printf(output0, argv[1],
+								printf(outputs[0], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 							case 1:
-								printf(output1, argv[1],
+								printf(outputs[1], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 							case 2:
-								printf(output2, argv[1],
+								printf(outputs[2], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 							case 3:
-								printf(output3, argv[1],
+								printf(outputs[3], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 							case 4:
-								printf(output4, argv[1],
+								printf(outputs[4], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 							case 6:
-								printf(output6, argv[1],
+								printf(outputs[6], fn,
                                        idx[i][j][0][0], idx[i][j][0][1],
                                        RED, CLR);
 								break;
 						}
+					}
+				}
+			}
 		}
+	}
+}
+
+int
+main(int argc, char *argv[])
+{
+	FILE *fp; /* pointer to FILE */
+	int idx[TYPES][COUNT][ORDER][POS] = {
+		/* [type][count][start, end][line, col] */
+		{ { { 0, 0 } } }, /* parentheses indices */
+		{ { { 0, 0 } } }, /* brackets indices */
+		{ { { 0, 0 } } }, /* braces indices */
+		{ { { 0, 0 } } }, /* single quote indices */
+		{ { { 0, 0 } } }, /* double quote indices */
+		{ { { 0, 0 } } }, /* escape sequence indices */
+		{ { { 0, 0 } } }, /* comment indices */
+		{ { { 0, 0 } } }, /* semi-colon indices (this doesn't have end value) */
+	};
+	int cnt[TYPES][ORDER]; /* counter for the start/end indices of each type */
+	char *outputs[TYPES] = {
+		"%s:%d:%d: %serror:%s Unmatched parentheses.\n",     /* [0] */
+		"%s:%d:%d: %serror:%s Unmatched square brackets.\n", /* [1] */
+		"%s:%d:%d: %serror:%s Unmatched curly braces.\n",    /* [2] */
+		"%s:%d:%d: %serror:%s Unmatched single quotes.\n",   /* [3] */
+		"%s:%d:%d: %serror:%s Unmatched double quotes.\n",   /* [4] */
+		NULL,                                                /* [5] */
+		"%s:%d:%d: %serror:%s Unmatched comments.\n",        /* [6] */
+		NULL,                                                /* [7] */
+	};
+	char fn[MAXFNLEN]; /* filename */
+
+	if (argc != 2)
+	{
+		fprintf(stderr, "Usage: %s FILE\n", argv[0]);
+		return 1;
+	}
+
+	if ((fp = fopen(argv[1], "r")) == NULL)
+	{
+		fprintf(stderr, "Failure in opening '%s'\n", argv[1]);
+		return 2;
+	}
+
+	/* save the filename and null-terminate it */
+	strncpy(fn, argv[1], MAXFNLEN - 1);
+	fn[MAXFNLEN - 1] = '\0';
+
+	/* fill the memory regions of arrays idx and cnt with zeroes */
+	memset(idx, 0, sizeof(idx));
+	memset(cnt, 0, sizeof(cnt));
+
+	detect_errors(fp, idx, cnt);
+	print_errors(idx, outputs, fn);
 
 	return 0;
 }
