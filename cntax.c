@@ -272,6 +272,9 @@ main(int argc, char *argv[])
 	memset(cnt, 0, sizeof(cnt));
 
 	detect_errors(fp, idx, cnt);
+
+	fclose(fp);
+
 	print_errors(idx, outputs, fn);
 
 	return 0;
